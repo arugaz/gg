@@ -92,7 +92,7 @@ func main() {
 	if err := gg.SaveJPG("./testdata/_beziers.jpeg", dc.Image(), 80); err != nil {
 		log.Fatalf("could not save to file: %+v", err)
 	}
-	if err := gg.SaveGIF("./testdata/_beziers.gif", dc.Frames(), 30); err != nil {
+	if err := gg.SaveGIF("./testdata/_beziers.gif", dc.Frames(), 3); err != nil {
 		log.Fatalf("could not save to file: %+v", err)
 	}
 }

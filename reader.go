@@ -32,11 +32,7 @@ func LoadImage(path string) (image.Image, error) {
 		return nil, err
 	}
 
-	if err != nil {
-		return nil, err
-	}
-
-	return im, nil
+	return im, err
 }
 
 // LoadImageFromFS loads an image from the file system provided by a file system (fs.FS)
@@ -62,32 +58,20 @@ func LoadImageFromFS(fsys fs.FS, path string) (image.Image, error) {
 		return nil, err
 	}
 
-	if err != nil {
-		return nil, err
-	}
-
-	return im, nil
+	return im, err
 }
 
 // LoadImageFromBytes decodes an image from a byte slice and returns it as an image.Image.
 func LoadImageFromBytes(raw []byte) (image.Image, error) {
-	im, err := LoadImageFromReader(bytes.NewReader(raw))
-	if err != nil {
-		return nil, err
-	}
-
-	return im, nil
+	return LoadImageFromReader(bytes.NewReader(raw))
 }
 
 // LoadImageFromReader loads an image from an io.Reader and returns it as an image.Image.
 // It decodes the image, and returns the decoded image.
 func LoadImageFromReader(r io.Reader) (image.Image, error) {
 	im, _, err := image.Decode(r)
-	if err != nil {
-		return nil, err
-	}
 
-	return im, nil
+	return im, err
 }
 
 // LoadPNG loads a PNG image from the specified file path and returns it as an image.Image.
@@ -104,11 +88,7 @@ func LoadPNG(path string) (image.Image, error) {
 		return nil, err
 	}
 
-	if err != nil {
-		return nil, err
-	}
-
-	return im, nil
+	return im, err
 }
 
 // LoadPNGFromFS loads a PNG image from the specified file path within a file system (fs.FS)
@@ -134,32 +114,20 @@ func LoadPNGFromFS(fsys fs.FS, path string) (image.Image, error) {
 		return nil, err
 	}
 
-	if err != nil {
-		return nil, err
-	}
-
-	return im, nil
+	return im, err
 }
 
 // LoadPNGFromBytes decodes a PNG image from a byte slice and returns it as an image.Image.
 func LoadPNGFromBytes(raw []byte) (image.Image, error) {
-	im, err := LoadPNGFromReader(bytes.NewReader(raw))
-	if err != nil {
-		return nil, err
-	}
-
-	return im, nil
+	return LoadPNGFromReader(bytes.NewReader(raw))
 }
 
 // LoadPNGFromReader loads a PNG image from an io.Reader and returns it as an image.Image.
 // It decodes the PNG image, and returns the decoded image.
 func LoadPNGFromReader(r io.Reader) (image.Image, error) {
 	im, err := png.Decode(r)
-	if err != nil {
-		return nil, err
-	}
 
-	return im, nil
+	return im, err
 }
 
 // LoadJPG loads a JPEG image from the specified file path and returns it as an image.Image.
@@ -176,11 +144,7 @@ func LoadJPG(path string) (image.Image, error) {
 		return nil, err
 	}
 
-	if err != nil {
-		return nil, err
-	}
-
-	return im, nil
+	return im, err
 }
 
 // LoadJPGFromFS loads a JPEG image from the specified file path within a file system (fs.FS)
@@ -206,32 +170,20 @@ func LoadJPGFromFS(fsys fs.FS, path string) (image.Image, error) {
 		return nil, err
 	}
 
-	if err != nil {
-		return nil, err
-	}
-
-	return im, nil
+	return im, err
 }
 
 // LoadJPGFromBytes decodes a JPEG image from a byte slice and returns it as an image.Image.
 func LoadJPGFromBytes(raw []byte) (image.Image, error) {
-	im, err := LoadJPGFromReader(bytes.NewReader(raw))
-	if err != nil {
-		return nil, err
-	}
-
-	return im, nil
+	return LoadJPGFromReader(bytes.NewReader(raw))
 }
 
 // LoadJPGFromReader loads a JPEG image from an io.Reader and returns it as an image.Image.
 // It decodes the JPEG image, and returns the decoded image.
 func LoadJPGFromReader(r io.Reader) (image.Image, error) {
 	im, err := jpeg.Decode(r)
-	if err != nil {
-		return nil, err
-	}
 
-	return im, nil
+	return im, err
 }
 
 // LoadFontFace loads a font face from a TrueType or OpenType font file at the specified file path
