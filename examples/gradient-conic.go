@@ -1,38 +1,45 @@
-// +build ignore
+// Copyright 2023 The gg Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
 
 package main
 
 import (
 	"image/color"
+	"log"
 
-	"github.com/fogleman/gg"
+	"github.com/arugaz/gg"
 )
 
 func main() {
-	dc := gg.NewContext(400, 400)
+	const S = 1000
 
-	grad1 := gg.NewConicGradient(200, 200, 0)
-	grad1.AddColorStop(0.0, color.Black)
-	grad1.AddColorStop(0.5, color.RGBA{255, 215, 0, 255})
-	grad1.AddColorStop(1.0, color.RGBA{255, 0, 0, 255})
+	dc := gg.NewContext(S, S)
 
-	grad2 := gg.NewConicGradient(200, 200, 90)
-	grad2.AddColorStop(0.00, color.RGBA{255, 0, 0, 255})
-	grad2.AddColorStop(0.16, color.RGBA{255, 255, 0, 255})
-	grad2.AddColorStop(0.33, color.RGBA{0, 255, 0, 255})
-	grad2.AddColorStop(0.50, color.RGBA{0, 255, 255, 255})
-	grad2.AddColorStop(0.66, color.RGBA{0, 0, 255, 255})
-	grad2.AddColorStop(0.83, color.RGBA{255, 0, 255, 255})
-	grad2.AddColorStop(1.00, color.RGBA{255, 0, 0, 255})
+	grad1 := gg.NewConicGradient(S/2, S/2, 0)
+	grad1.AddColorStop(0, color.White)
+	grad1.AddColorStop(.5, color.RGBA{R: 255, G: 215, A: 255})
+	grad1.AddColorStop(1, color.RGBA{R: 255, A: 255})
 
 	dc.SetStrokeStyle(grad1)
 	dc.SetLineWidth(20)
-	dc.DrawCircle(200, 200, 180)
+	dc.DrawCircle(S/2, S/2, S/2-20)
 	dc.Stroke()
 
+	grad2 := gg.NewConicGradient(S/2, S/2, 90)
+	grad2.AddColorStop(0, color.RGBA{R: 255, A: 255})
+	grad2.AddColorStop(.16, color.RGBA{R: 255, G: 255, A: 255})
+	grad2.AddColorStop(.33, color.RGBA{G: 255, A: 255})
+	grad2.AddColorStop(.50, color.RGBA{G: 255, B: 255, A: 255})
+	grad2.AddColorStop(.66, color.RGBA{B: 255, A: 255})
+	grad2.AddColorStop(.83, color.RGBA{R: 255, B: 255, A: 255})
+	grad2.AddColorStop(1, color.RGBA{R: 255, A: 255})
+
 	dc.SetFillStyle(grad2)
-	dc.DrawCircle(200, 200, 150)
+	dc.DrawCircle(S/2, S/2, S/2-50)
 	dc.Fill()
 
-	dc.SavePNG("gradient-conic.png")
+	if err := gg.SavePNG("./testdata/_gradient-conic.png", dc.Image()); err != nil {
+		log.Fatalf("could not save to file: %+v", err)
+	}
 }

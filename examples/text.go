@@ -1,6 +1,14 @@
+// Copyright 2023 The gg Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package main
 
-import "github.com/fogleman/gg"
+import (
+	"log"
+
+	"github.com/arugaz/gg"
+)
 
 func main() {
 	const S = 1024
@@ -8,9 +16,13 @@ func main() {
 	dc.SetRGB(1, 1, 1)
 	dc.Clear()
 	dc.SetRGB(0, 0, 0)
-	if err := dc.LoadFontFace("/Library/Fonts/Arial.ttf", 96); err != nil {
-		panic(err)
+
+	if err := dc.LoadFontFace("/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc", 96); err != nil {
+		log.Fatalf("could not load font: %+v", err)
 	}
-	dc.DrawStringAnchored("Hello, world!", S/2, S/2, 0.5, 0.5)
-	dc.SavePNG("out.png")
+	dc.DrawStringAnchored("こんにちは世界！", S/2, S/2, 0.5, 0.5)
+
+	if err := gg.SavePNG("./testdata/_text.png", dc.Image()); err != nil {
+		log.Fatalf("could not save to file: %+v", err)
+	}
 }

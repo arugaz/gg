@@ -1,3 +1,7 @@
+// Copyright 2023 The gg Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package gg
 
 import (
@@ -7,10 +11,14 @@ import (
 	"golang.org/x/image/math/fixed"
 )
 
+// flattenPath converts a raster.Path into a slice of slices of Point, representing flattened path segments.
+//
+// This function processes a raster.Path, which is typically a series of fixed-point commands and coordinates, and flattens it into a list of connected Point segments.
 func flattenPath(p raster.Path) [][]Point {
 	var result [][]Point
 	var path []Point
 	var cx, cy float64
+
 	for i := 0; i < len(p); {
 		switch p[i] {
 		case 0:
@@ -53,20 +61,28 @@ func flattenPath(p raster.Path) [][]Point {
 			panic("bad path")
 		}
 	}
+
 	if len(path) > 0 {
 		result = append(result, path)
 	}
+
 	return result
 }
 
+// dashPath creates a dashed representation of a path.
+//
+// This function takes a list of connected path segments represented as a slice of slices of Point and converts them into a dashed representation based on the specified dash pattern and offset.
 func dashPath(paths [][]Point, dashes []float64, offset float64) [][]Point {
 	var result [][]Point
+
 	if len(dashes) == 0 {
 		return paths
 	}
+
 	if len(dashes) == 1 {
 		dashes = append(dashes, dashes[0])
 	}
+
 	for _, path := range paths {
 		if len(path) < 2 {
 			continue
@@ -76,7 +92,6 @@ func dashPath(paths [][]Point, dashes []float64, offset float64) [][]Point {
 		dashIndex := 0
 		segmentLength := 0.0
 
-		// offset
 		if offset != 0 {
 			var totalLength float64
 			for _, dashLength := range dashes {
@@ -98,6 +113,7 @@ func dashPath(paths [][]Point, dashes []float64, offset float64) [][]Point {
 
 		var segment []Point
 		segment = append(segment, previous)
+
 		for pathIndex < len(path) {
 			dashLength := dashes[dashIndex]
 			point := path[pathIndex]
@@ -122,19 +138,27 @@ func dashPath(paths [][]Point, dashes []float64, offset float64) [][]Point {
 				pathIndex++
 			}
 		}
+
 		if dashIndex%2 == 0 && len(segment) > 1 {
 			result = append(result, segment)
 		}
 	}
+
 	return result
 }
 
+// rasterPath converts a path into a raster representation.
+//
+// This function takes a slice of slices of Point, where each inner slice represents a connected path segment. It converts these path segments into a raster representation for rendering.
 func rasterPath(paths [][]Point) raster.Path {
 	var result raster.Path
+
 	for _, path := range paths {
 		var previous fixed.Point26_6
+
 		for i, point := range path {
 			f := point.Fixed()
+
 			if i == 0 {
 				result.Start(f)
 			} else {
@@ -146,18 +170,23 @@ func rasterPath(paths [][]Point) raster.Path {
 				if dy < 0 {
 					dy = -dy
 				}
-				if dx+dy > 8 {
+				if dx+dy > 4 {
 					// TODO: this is a hack for cases where two points are
 					// too close - causes rendering issues with joins / caps
 					result.Add1(f)
 				}
 			}
+
 			previous = f
 		}
 	}
+
 	return result
 }
 
+// dashed creates a dashed version of a raster.Path.
+//
+// This function takes an input raster.Path, a slice of dash lengths, and an offset, and creates a dashed version of the input path. The resulting raster.Path represents the dashed line.
 func dashed(path raster.Path, dashes []float64, offset float64) raster.Path {
 	return rasterPath(dashPath(flattenPath(path), dashes, offset))
 }

@@ -1,19 +1,35 @@
+// Copyright 2023 The gg Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package main
 
-import "github.com/fogleman/gg"
+import (
+	"log"
+
+	"github.com/arugaz/gg"
+)
 
 func main() {
-	dc := gg.NewContext(1000, 1000)
+	const S = 1000
+
+	dc := gg.NewContext(S, S)
+	w := .1
+
 	dc.SetRGB(1, 1, 1)
 	dc.Clear()
+
 	dc.SetRGB(0, 0, 0)
-	w := 0.1
-	for i := 100; i <= 900; i += 20 {
+
+	for i := 100; i <= S-100; i += 20 {
 		x := float64(i)
-		dc.DrawLine(x+50, 0, x-50, 1000)
+		dc.DrawLine(x+50, 0, x-50, S)
 		dc.SetLineWidth(w)
 		dc.Stroke()
-		w += 0.1
+		w += .1
 	}
-	dc.SavePNG("out.png")
+
+	if err := gg.SavePNG("./testdata/_linewidth.png", dc.Image()); err != nil {
+		log.Fatalf("could not save to file: %+v", err)
+	}
 }

@@ -1,9 +1,18 @@
+// Copyright 2023 The gg Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package main
 
-import "github.com/fogleman/gg"
+import (
+	"log"
+
+	"github.com/arugaz/gg"
+)
 
 func main() {
 	const S = 1000
+
 	dc := gg.NewContext(S, S)
 	dc.SetRGB(1, 1, 1)
 	dc.Clear()
@@ -18,7 +27,7 @@ func main() {
 
 	dc.MoveTo(x0, y0)
 	dc.CubicTo(x1, y1, x2, y2, x3, y3)
-	dc.SetRGBA(0, 0, 0, 0.2)
+	dc.SetRGBA(0, 0, 0, .2)
 	dc.SetLineWidth(8)
 	dc.FillPreserve()
 	dc.SetRGB(0, 0, 0)
@@ -29,10 +38,12 @@ func main() {
 	dc.LineTo(x1, y1)
 	dc.LineTo(x2, y2)
 	dc.LineTo(x3, y3)
-	dc.SetRGBA(1, 0, 0, 0.4)
+	dc.SetRGBA(1, 0, 0, .4)
 	dc.SetLineWidth(2)
 	dc.SetDash(4, 8, 1, 8)
 	dc.Stroke()
 
-	dc.SavePNG("out.png")
+	if err := gg.SavePNG("./testdata/_cubic.png", dc.Image()); err != nil {
+		log.Fatalf("could not save to file: %+v", err)
+	}
 }

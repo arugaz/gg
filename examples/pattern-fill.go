@@ -1,20 +1,36 @@
+// Copyright 2023 The gg Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package main
 
-import "github.com/fogleman/gg"
+import (
+	"log"
+
+	"github.com/arugaz/gg"
+)
 
 func main() {
-	im, err := gg.LoadPNG("examples/baboon.png")
+	const S = 600
+
+	dc := gg.NewContext(S, S)
+
+	im, err := gg.LoadPNG("./testdata/baboon.png")
 	if err != nil {
-		panic(err)
+		log.Fatalf("could not load baboon.png: %+v", err)
 	}
+
 	pattern := gg.NewSurfacePattern(im, gg.RepeatBoth)
-	dc := gg.NewContext(600, 600)
-	dc.MoveTo(20, 20)
-	dc.LineTo(590, 20)
-	dc.LineTo(590, 590)
-	dc.LineTo(20, 590)
+
+	dc.MoveTo(0, 0)
+	dc.LineTo(S, 0)
+	dc.LineTo(S, S)
+	dc.LineTo(0, S)
 	dc.ClosePath()
 	dc.SetFillStyle(pattern)
 	dc.Fill()
-	dc.SavePNG("out.png")
+
+	if err := gg.SavePNG("./testdata/_pattern-fill.png", dc.Image()); err != nil {
+		log.Fatalf("could not save to file: %+v", err)
+	}
 }

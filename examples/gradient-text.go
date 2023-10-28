@@ -1,41 +1,46 @@
+// Copyright 2023 The gg Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package main
 
 import (
 	"image/color"
+	"log"
 
-	"github.com/fogleman/gg"
-)
-
-const (
-	W = 1024
-	H = 512
+	"github.com/arugaz/gg"
+	"golang.org/x/image/font/gofont/gobold"
 )
 
 func main() {
+	const (
+		W = 1024
+		H = 512
+	)
+
 	dc := gg.NewContext(W, H)
-
-	// draw text
 	dc.SetRGB(0, 0, 0)
-	dc.LoadFontFace("/Library/Fonts/Impact.ttf", 128)
-	dc.DrawStringAnchored("Gradient Text", W/2, H/2, 0.5, 0.5)
 
-	// get the context as an alpha mask
+	if err := dc.LoadFontFaceFromBytes(gobold.TTF, 128); err != nil {
+		log.Fatalf("could not load bold font: %+v", err)
+	}
+	dc.DrawStringAnchored("Gradient Text", W/2, H/2, .5, .5)
+
 	mask := dc.AsMask()
 
-	// clear the context
-	dc.SetRGB(1, 1, 1)
-	dc.Clear()
-
-	// set a gradient
 	g := gg.NewLinearGradient(0, 0, W, H)
-	g.AddColorStop(0, color.RGBA{255, 0, 0, 255})
-	g.AddColorStop(1, color.RGBA{0, 0, 255, 255})
+	g.AddColorStop(0, color.RGBA{R: 255, A: 255})
+	g.AddColorStop(1, color.RGBA{B: 255, A: 255})
 	dc.SetFillStyle(g)
 
-	// using the mask, fill the context with the gradient
-	dc.SetMask(mask)
+	if err := dc.SetMask(mask); err != nil {
+		log.Fatalf("could not set mask: %+v", err)
+	}
+
 	dc.DrawRectangle(0, 0, W, H)
 	dc.Fill()
 
-	dc.SavePNG("out.png")
+	if err := gg.SavePNG("./testdata/_gradient-text.png", dc.Image()); err != nil {
+		log.Fatalf("could not save to file: %+v", err)
+	}
 }

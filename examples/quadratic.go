@@ -1,12 +1,23 @@
+// Copyright 2023 The gg Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package main
 
-import "github.com/fogleman/gg"
+import (
+	"log"
+
+	"github.com/arugaz/gg"
+	"golang.org/x/image/font/gofont/goregular"
+)
 
 func main() {
 	const S = 1000
+
 	dc := gg.NewContext(S, S)
 	dc.SetRGB(1, 1, 1)
 	dc.Clear()
+
 	dc.Translate(S/2, S/2)
 	dc.Scale(40, 40)
 
@@ -22,33 +33,38 @@ func main() {
 	dc.LineTo(x2, y2)
 	dc.LineTo(x3, y3)
 	dc.LineTo(x4, y4)
-	dc.SetHexColor("FF2D00")
+	dc.SetHexColor("#FF2D00")
 	dc.SetLineWidth(8)
 	dc.Stroke()
 
 	dc.MoveTo(x0, y0)
 	dc.QuadraticTo(x1, y1, x2, y2)
 	dc.QuadraticTo(x3, y3, x4, y4)
-	dc.SetHexColor("3E606F")
+	dc.SetHexColor("#3E606F")
 	dc.SetLineWidth(16)
 	dc.FillPreserve()
 	dc.SetRGB(0, 0, 0)
 	dc.Stroke()
 
-	dc.DrawCircle(x0, y0, 0.5)
-	dc.DrawCircle(x1, y1, 0.5)
-	dc.DrawCircle(x2, y2, 0.5)
-	dc.DrawCircle(x3, y3, 0.5)
-	dc.DrawCircle(x4, y4, 0.5)
+	dc.DrawCircle(x0, y0, .5)
+	dc.DrawCircle(x1, y1, .5)
+	dc.DrawCircle(x2, y2, .5)
+	dc.DrawCircle(x3, y3, .5)
+	dc.DrawCircle(x4, y4, .5)
 	dc.SetRGB(1, 1, 1)
 	dc.FillPreserve()
 	dc.SetRGB(0, 0, 0)
 	dc.SetLineWidth(4)
 	dc.Stroke()
 
-	dc.LoadFontFace("/Library/Fonts/Arial.ttf", 200)
-	dc.DrawStringAnchored("g", -5, 5, 0.5, 0.5)
-	dc.DrawStringAnchored("G", 5, -5, 0.5, 0.5)
+	dc.Scale(.05, .05)
+	if err := dc.LoadFontFaceFromBytes(goregular.TTF, 100); err != nil {
+		log.Fatalf("could not load regular font: %+v", err)
+	}
+	dc.DrawStringAnchored("G", +100, -100, .5, .5)
+	dc.DrawStringAnchored("g", -100, +100, .5, .5)
 
-	dc.SavePNG("out.png")
+	if err := gg.SavePNG("./testdata/_quadratic.png", dc.Image()); err != nil {
+		log.Fatalf("could not save to file: %+v", err)
+	}
 }

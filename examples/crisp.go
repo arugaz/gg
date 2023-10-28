@@ -1,44 +1,53 @@
+// Copyright 2023 The gg Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package main
 
 import (
-	"github.com/fogleman/gg"
+	"log"
+
+	"github.com/arugaz/gg"
 )
 
 func main() {
-	const W = 1000
-	const H = 1000
-	const Minor = 10
-	const Major = 100
+	const (
+		S     = 1000
+		Minor = 10
+		Major = 100
+	)
 
-	dc := gg.NewContext(W, H)
+	dc := gg.NewContext(S, S)
 	dc.SetRGB(1, 1, 1)
 	dc.Clear()
 
-	// minor grid
-	for x := Minor; x < W; x += Minor {
-		fx := float64(x) + 0.5
-		dc.DrawLine(fx, 0, fx, H)
+	for x := Minor; x < S; x += Minor {
+		fx := float64(x) + .5
+		dc.DrawLine(fx, 0, fx, S)
 	}
-	for y := Minor; y < H; y += Minor {
-		fy := float64(y) + 0.5
-		dc.DrawLine(0, fy, W, fy)
+	for y := Minor; y < S; y += Minor {
+		fy := float64(y) + .5
+		dc.DrawLine(0, fy, S, fy)
 	}
+
 	dc.SetLineWidth(1)
-	dc.SetRGBA(0, 0, 0, 0.25)
+	dc.SetRGBA(0, 0, 0, .25)
 	dc.Stroke()
 
-	// major grid
-	for x := Major; x < W; x += Major {
-		fx := float64(x) + 0.5
-		dc.DrawLine(fx, 0, fx, H)
+	for x := Major; x < S; x += Major {
+		fx := float64(x) + .5
+		dc.DrawLine(fx, 0, fx, S)
 	}
-	for y := Major; y < H; y += Major {
-		fy := float64(y) + 0.5
-		dc.DrawLine(0, fy, W, fy)
+	for y := Major; y < S; y += Major {
+		fy := float64(y) + .5
+		dc.DrawLine(0, fy, S, fy)
 	}
+
 	dc.SetLineWidth(1)
-	dc.SetRGBA(0, 0, 0, 0.5)
+	dc.SetRGBA(0, 0, 0, .5)
 	dc.Stroke()
 
-	dc.SavePNG("out.png")
+	if err := gg.SavePNG("./testdata/_crisp.png", dc.Image()); err != nil {
+		log.Fatalf("could not save to file: %+v", err)
+	}
 }

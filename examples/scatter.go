@@ -1,32 +1,46 @@
+// Copyright 2023 The gg Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package main
 
 import (
+	"log"
 	"math/rand"
 
-	"github.com/fogleman/gg"
+	"github.com/arugaz/gg"
+	"golang.org/x/image/font/gofont/gobold"
 )
 
-func CreatePoints(n int) []gg.Point {
-	points := make([]gg.Point, n)
-	for i := 0; i < n; i++ {
-		x := 0.5 + rand.NormFloat64()*0.1
-		y := x + rand.NormFloat64()*0.1
-		points[i] = gg.Point{x, y}
-	}
-	return points
-}
-
 func main() {
-	const S = 1024
-	const P = 64
+	createPoints := func(n int) []gg.Point {
+		var (
+			rnd = rand.New(rand.NewSource(54321))
+			pts = make([]gg.Point, n)
+		)
+
+		for i := 0; i < n; i++ {
+			x := 0.5 + rnd.NormFloat64()*0.1
+			y := x + rnd.NormFloat64()*0.1
+			pts[i] = gg.Point{X: x, Y: y}
+		}
+
+		return pts
+	}
+
+	const (
+		S = 1024
+		P = 64
+	)
+
 	dc := gg.NewContext(S, S)
+
 	dc.InvertY()
 	dc.SetRGB(1, 1, 1)
 	dc.Clear()
-	points := CreatePoints(1000)
 	dc.Translate(P, P)
 	dc.Scale(S-P*2, S-P*2)
-	// draw minor grid
+
 	for i := 1; i <= 10; i++ {
 		x := float64(i) / 10
 		dc.MoveTo(x, 0)
@@ -34,10 +48,10 @@ func main() {
 		dc.MoveTo(0, x)
 		dc.LineTo(1, x)
 	}
-	dc.SetRGBA(0, 0, 0, 0.25)
+	dc.SetRGBA(0, 0, 0, .25)
 	dc.SetLineWidth(1)
 	dc.Stroke()
-	// draw axes
+
 	dc.MoveTo(0, 0)
 	dc.LineTo(1, 0)
 	dc.MoveTo(0, 0)
@@ -45,22 +59,33 @@ func main() {
 	dc.SetRGB(0, 0, 0)
 	dc.SetLineWidth(4)
 	dc.Stroke()
-	// draw points
-	dc.SetRGBA(0, 0, 1, 0.5)
+
+	points := createPoints(1000)
+
+	dc.SetRGBA(0, 0, 1, .5)
 	for _, p := range points {
-		dc.DrawCircle(p.X, p.Y, 3.0/S)
+		dc.DrawCircle(p.X, p.Y, 3.1/S)
 		dc.Fill()
 	}
-	// draw text
+
 	dc.Identity()
 	dc.SetRGB(0, 0, 0)
-	if err := dc.LoadFontFace("/Library/Fonts/Arial Bold.ttf", 24); err != nil {
-		panic(err)
+
+	err := dc.LoadFontFaceFromBytes(gobold.TTF, 32)
+	if err != nil {
+		log.Fatalf("could not load bold font: %+v", err)
 	}
-	dc.DrawStringAnchored("Chart Title", S/2, P/2, 0.5, 0.5)
-	if err := dc.LoadFontFace("/Library/Fonts/Arial.ttf", 18); err != nil {
-		panic(err)
+	dc.DrawStringAnchored("Chart Title", S/2, P/2, .5, .5)
+
+	err = dc.LoadFontFaceFromBytes(gobold.TTF, 24)
+	if err != nil {
+		log.Fatalf("could not load bold font: %+v", err)
 	}
-	dc.DrawStringAnchored("X Axis Title", S/2, S-P/2, 0.5, 0.5)
-	dc.SavePNG("out.png")
+	dc.DrawStringAnchored("X Axis Title", S/2, S-P/2, .5, .5)
+	dc.Rotate(gg.Radians(-90))
+	dc.DrawStringAnchored("Y Axis Title", -S/2, S/P+2, .5, .5)
+
+	if err := gg.SavePNG("./testdata/_scatter.png", dc.Image()); err != nil {
+		log.Fatalf("could not save to file: %+v", err)
+	}
 }

@@ -1,20 +1,30 @@
+// Copyright 2023 The gg Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package main
 
 import (
 	"log"
 
-	"github.com/fogleman/gg"
+	"github.com/arugaz/gg"
 )
 
 func main() {
-	im, err := gg.LoadImage("examples/baboon.png")
+	const S = 512
+
+	dc := gg.NewContext(S, S)
+
+	im, err := gg.LoadPNG("./testdata/baboon.png")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("could not load baboon.png: %+v", err)
 	}
 
-	dc := gg.NewContext(512, 512)
-	dc.DrawRoundedRectangle(0, 0, 512, 512, 64)
+	dc.DrawRoundedRectangle(0, 0, S, S, 96)
 	dc.Clip()
 	dc.DrawImage(im, 0, 0)
-	dc.SavePNG("out.png")
+
+	if err := gg.SavePNG("./testdata/_mask.png", dc.Image()); err != nil {
+		log.Fatalf("could not save to file: %+v", err)
+	}
 }

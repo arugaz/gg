@@ -1,26 +1,31 @@
+// Copyright 2023 The gg Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package main
 
 import (
 	"log"
 
-	"github.com/fogleman/gg"
-	"github.com/golang/freetype/truetype"
-	"golang.org/x/image/font/gofont/goregular"
+	"github.com/arugaz/gg"
+	"golang.org/x/image/font/gofont/gobold"
 )
 
 func main() {
-	font, err := truetype.Parse(goregular.TTF)
-	if err != nil {
-		log.Fatal(err)
+	const S = 1024
+
+	dc := gg.NewContext(S, S)
+
+	if err := dc.LoadFontFaceFromBytes(gobold.TTF, 48); err != nil {
+		log.Fatalf("could not load bold font: %+v", err)
 	}
 
-	face := truetype.NewFace(font, &truetype.Options{Size: 48})
-
-	dc := gg.NewContext(1024, 1024)
-	dc.SetFontFace(face)
 	dc.SetRGB(1, 1, 1)
 	dc.Clear()
 	dc.SetRGB(0, 0, 0)
-	dc.DrawStringAnchored("Hello, world!", 512, 512, 0.5, 0.5)
-	dc.SavePNG("out.png")
+	dc.DrawStringAnchored("Hello, world!", S/2, S/2, .5, .5)
+
+	if err := gg.SavePNG("./testdata/_gofont.png", dc.Image()); err != nil {
+		log.Fatalf("could not save to file: %+v", err)
+	}
 }
